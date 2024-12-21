@@ -3,6 +3,10 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, logout
 from .forms import RegisterForm
 
+
+def home_view(request):
+    return render(request, 'tracker/home.html')
+
 def register_view(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
@@ -11,7 +15,7 @@ def register_view(request):
             return redirect('login')
     else:
         form = RegisterForm()
-    return render(request, 'register.html', {'form': form})
+    return render(request, 'tracker/register.html', {'form': form})
 
 def login_view(request):
     if request.method == 'POST':
@@ -21,7 +25,7 @@ def login_view(request):
             return redirect('home')
     else:
         form = AuthenticationForm()
-    return render(request, 'login.html', {'form': form})
+    return render(request, 'tracker/login.html', {'form': form})
 
 def logout_view(request):
     logout(request)
