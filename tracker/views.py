@@ -7,6 +7,7 @@ from .forms import ProductForm
 from django.contrib import messages
 from .scraper import fetch_price
 import asyncio
+from asgiref.sync import sync_to_async
 
 def home_view(request):
     return render(request, 'tracker/home.html')
@@ -38,23 +39,24 @@ def logout_view(request):
 async def add_product(request):
     if request.method == 'POST':
         form = ProductForm(request.POST)
-        if form.is_valid():
+        if await sync_to_async(form.is_valid)():
             product_url = form.cleaned_data['url']
-            cache_path = f"tracker/cache/{product_url.split('/')[-1]}.html"
 
-            product_name, current_price = await fetch_price(product_url, cache_path)
+            # Fetch product details asynchronously
+            product_name, current_price = await fetch_price(product_url)
 
             if not current_price:
-                form.add_error('url', "Failed to fetch price. Please check the URL.")
-                return render(request, 'tracker/add_product.html', {'form': form})
+                await sync_to_async(form.add_error)('url', "Failed to fetch price. Please check the URL.")
+                return await sync_to_async(render)(request, 'tracker/add_product.html', {'form': form})
 
+            # Save product details to the database
             form.instance.name = product_name
             form.instance.current_price = current_price
-            form.save()
-            return redirect('product_list')
+            await sync_to_async(form.save)()
+            return await sync_to_async(redirect)('product_list')
     else:
-        form = ProductForm()
-    return render(request, 'tracker/add_product.html', {'form': form})
+        form = await sync_to_async(ProductForm)()
+    return await sync_to_async(render)(request, 'tracker/add_product.html', {'form': form})
 
 def product_list(request):
     products = Product.objects.all()
