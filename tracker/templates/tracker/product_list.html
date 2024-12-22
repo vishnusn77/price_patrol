@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tracked Products</title>
+</head>
+<body>
+    <h2>Your Tracked Products</h2>
+    <ul>
+        {% for product in products %}
+            <li>{{ product.name }} - ${{ product.current_price }}</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'add_product' %}">Add Another Product</a>
+</body>
+</html>
