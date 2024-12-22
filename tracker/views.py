@@ -9,6 +9,16 @@ from .scraper import fetch_price
 import asyncio
 from asgiref.sync import sync_to_async
 from django.core.mail import send_mail
+from django.http import JsonResponse
+from tracker.crons import PriceCheckCronJob
+
+def run_price_check(request):
+    try:
+        # Run the cron job logic
+        PriceCheckCronJob().do()
+        return JsonResponse({"status": "success", "message": "Price check completed."})
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": str(e)})
 
 def home_view(request):
     return render(request, 'tracker/home.html')
@@ -37,24 +47,25 @@ def logout_view(request):
     logout(request)
     return redirect('login')
 
-async def add_product(request):
-    if request.method == 'POST':
+def add_product(request):
+    if request.method == "POST":
         form = ProductForm(request.POST)
-        if await sync_to_async(form.is_valid)():
-            product_url = form.cleaned_data['url']
-            current_price = await fetch_price(product_url)
+        if form.is_valid():
+            product = form.save(commit=False)  # Don't save to DB yet
+            product_name, current_price = asyncio.run(fetch_price(product.url))  # Fetch name and price
+            
+            if current_price is None:
+                form.add_error('url', 'Could not fetch price for the given URL.')
+            else:
+                product.name = product_name  # Save the scraped product name
+                product.current_price = current_price
+                product.save()  # Save to the database
+                return redirect('product_list')  # Redirect to the product list page
 
-            if not current_price:
-                await sync_to_async(form.add_error)('url', "Failed to fetch price. Please check the URL.")
-                return await sync_to_async(render)(request, 'tracker/add_product.html', {'form': form})
-
-            # Save product details to the database
-            form.instance.current_price = current_price
-            await sync_to_async(form.save)()
-            return await sync_to_async(redirect)('product_list')
     else:
-        form = await sync_to_async(ProductForm)()
-    return await sync_to_async(render)(request, 'tracker/add_product.html', {'form': form})
+        form = ProductForm()
+
+    return render(request, 'tracker/add_product.html', {'form': form})
 
 def product_list(request):
     products = Product.objects.all()
