@@ -1,43 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product List</title>
-</head>
-<body>
-    <h1>Tracked Products</h1>
+{% extends 'base.html' %}
 
-    <!-- Add Product Button -->
-    <a href="{% url 'add_product' %}" style="text-decoration: none;">
-        <button style="margin-bottom: 20px;">Add Another Product</button>
-    </a>
+{% block title %}Product List{% endblock %}
 
-    <table>
-        <thead>
-            <tr>
-                <th>Product Name</th>
-                <th>Current Price</th>
-                <th>Desired Price</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for product in products %}
-            <tr>
-                <td>{{ product.name }}</td>
-                <td>{{ product.current_price }}</td>
-                <td>{{ product.desired_price }}</td>
-                <td>
-                    {% if product.current_price <= product.desired_price %}
-                        Price below desired!
-                    {% else %}
-                        No price drop.
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-</html>
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h2 class="text-center mb-4">Tracked Products</h2>
+        <a href="{% url 'add_product' %}" class="btn btn-success mb-3">Add Another Product</a>
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>Current Price</th>
+                    <th>Desired Price</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>{{ product.name }}</td>
+                    <td>${{ product.current_price }}</td>
+                    <td>${{ product.desired_price }}</td>
+                    <td>
+                        {% if product.current_price <= product.desired_price %}
+                            <span class="badge bg-success">Price below desired!</span>
+                        {% else %}
+                            <span class="badge bg-warning">No price drop.</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center">No products found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,7 +1,8 @@
 from djongo import models
+from django.contrib.auth.models import User
 
 class Product(models.Model):
-    user = models.CharField(max_length=100, default='Anonymous')  # Add ForeignKey to User later
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     url = models.URLField()
     current_price = models.FloatField()

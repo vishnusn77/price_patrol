@@ -10,7 +10,9 @@ import asyncio
 from asgiref.sync import sync_to_async
 from django.core.mail import send_mail
 from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required  # For login restrictions
 from tracker.crons import PriceCheckCronJob
+
 
 def run_price_check(request):
     try:
@@ -20,8 +22,13 @@ def run_price_check(request):
     except Exception as e:
         return JsonResponse({"status": "error", "message": str(e)})
 
+
 def home_view(request):
+    # Redirect to login if not authenticated
+    if not request.user.is_authenticated:
+        return redirect('login')
     return render(request, 'tracker/home.html')
+
 
 def register_view(request):
     if request.method == 'POST':
@@ -33,6 +40,7 @@ def register_view(request):
         form = RegisterForm()
     return render(request, 'tracker/register.html', {'form': form})
 
+
 def login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(data=request.POST)
@@ -43,10 +51,13 @@ def login_view(request):
         form = AuthenticationForm()
     return render(request, 'tracker/login.html', {'form': form})
 
+
 def logout_view(request):
     logout(request)
     return redirect('login')
 
+
+@login_required
 def add_product(request):
     if request.method == "POST":
         form = ProductForm(request.POST)
@@ -59,6 +70,7 @@ def add_product(request):
             else:
                 product.name = product_name  # Save the scraped product name
                 product.current_price = current_price
+                product.user = request.user  # Associate the product with the logged-in user
                 product.save()  # Save to the database
                 return redirect('product_list')  # Redirect to the product list page
 
@@ -67,9 +79,13 @@ def add_product(request):
 
     return render(request, 'tracker/add_product.html', {'form': form})
 
+
+@login_required
 def product_list(request):
-    products = Product.objects.all()
+    products = Product.objects.filter(user=request.user)  # Only fetch products added by the logged-in user
     return render(request, 'tracker/product_list.html', {'products': products})
+
+
 
 def send_price_alert(product):
     """
