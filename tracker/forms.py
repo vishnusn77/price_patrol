@@ -12,4 +12,4 @@ class RegisterForm(UserCreationForm):
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['name', 'url', 'desired_price']
+        fields = ['name', 'url', 'desired_price', 'user_email']

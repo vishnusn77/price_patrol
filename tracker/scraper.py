@@ -50,7 +50,7 @@ async def fetch_html(url, headers, cache_path=None):
 
 async def fetch_price(url):
     """
-    Fetch product name and price asynchronously with proper cache handling.
+    Fetch product price asynchronously with proper cache handling.
     """
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
@@ -63,10 +63,7 @@ async def fetch_price(url):
     html = await fetch_html(url, headers, cache_path)
     soup = BeautifulSoup(html, 'html.parser')
 
-    # Extract product details
-    product_name = soup.find("span", {"id": "productTitle"})
-    product_name = product_name.text.strip() if product_name else "Product not found"
-
+    # Extract price details
     price_whole = soup.find("span", {"class": "a-price-whole"})
     price_fraction = soup.find("span", {"class": "a-price-fraction"})
 
@@ -92,7 +89,8 @@ async def fetch_price(url):
     else:
         price = None
 
-    return product_name, price
+    return price
+
 
 
 
