@@ -1,1 +1,1 @@
-web: gunicorn price_tracker.wsgi:application --preload --bind 0.0.0.0:$PORT
+web: gunicorn your_project.wsgi:application --timeout 120 --workers 1

@@ -4,3 +4,6 @@
 price_tracker/__pycache__/
 tracker/__pycache__/
 tracker/cache/
+tracker/management/__pycache__/
+tracker/management/commands/__pycache__/
+tracker/migrations/__pycache__/
