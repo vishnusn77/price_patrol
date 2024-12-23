@@ -63,6 +63,7 @@ def add_product(request):
         form = ProductForm(request.POST)
         if form.is_valid():
             product = form.save(commit=False)  # Don't save to DB yet
+            product.user = request.user  # Associate product with the logged-in user
             product_name, current_price = asyncio.run(fetch_price(product.url))  # Fetch name and price
             
             if current_price is None:
@@ -70,14 +71,13 @@ def add_product(request):
             else:
                 product.name = product_name  # Save the scraped product name
                 product.current_price = current_price
-                product.user = request.user  # Associate the product with the logged-in user
                 product.save()  # Save to the database
                 return redirect('product_list')  # Redirect to the product list page
-
     else:
         form = ProductForm()
 
     return render(request, 'tracker/add_product.html', {'form': form})
+
 
 
 @login_required

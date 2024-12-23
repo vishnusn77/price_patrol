@@ -21,6 +21,13 @@
             <form method="post">
                 {% csrf_token %}
                 
+                <!-- Product Name -->
+                <div class="mb-3">
+                    <label for="id_name" style="font-weight: bold;">Product Name:</label>
+                    <input type="text" name="name" id="id_name" value="{{ form.name.value|default_if_none:'' }}" 
+                           style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+                
                 <!-- Product URL -->
                 <div class="mb-3">
                     <label for="id_url" style="font-weight: bold;">Product URL:</label>
