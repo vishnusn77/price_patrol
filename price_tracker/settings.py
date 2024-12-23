@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-)6!nx7w6_1gg60wdvvm2#sc%^7rhkh29jyg0vaad1(6gv$k@#5
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['price-patrol-tvb4.onrender.com']
 
 
 # Application definition
