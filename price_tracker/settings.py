@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'tracker',
-    'django_cron',
 ]
 
 MIDDLEWARE = [
@@ -90,7 +89,6 @@ DATABASES = {
         }
     }
 }
-
 
 
 # Password validation
