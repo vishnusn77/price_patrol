@@ -19,17 +19,29 @@ class Command(BaseCommand):
 
         for product in products:
             try:
+                # Fetch the current price using the scraper
                 product_name, current_price = await fetch_price(product.url)  # Fetch name and price using async function
-
-                # Debug statement to inspect fetched data
-                print(f"Fetched price for {product.name}: {current_price} ({type(current_price)})")
 
                 if current_price is None:
                     self.stdout.write(f"Could not fetch price for {product.name}. Skipping...")
                     continue
 
+                # Convert last_notified_price to float if it exists
+                last_notified_price = (
+                    float(product.last_notified_price.to_decimal()) 
+                    if product.last_notified_price else None
+                )
+
+                # Check if the email has already been sent for this price
+                if last_notified_price is not None and last_notified_price == current_price:
+                    self.stdout.write(f"Email already sent for {product.name} at price {current_price}. Skipping...")
+                    continue
+
+                # Send email if the price is below or equal to the desired price
                 if current_price <= product.desired_price:
                     send_price_drop_email(product, current_price)
+                    product.last_notified_price = current_price  # Update the notified price
+                    await sync_to_async(product.save)()  # Save the updated product
                     self.stdout.write(f"Email sent for {product.name} to {product.user_email}")
                 else:
                     self.stdout.write(f"No price drop for {product.name}")
