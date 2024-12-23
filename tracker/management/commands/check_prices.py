@@ -9,9 +9,13 @@ class Command(BaseCommand):
     help = 'Check product prices and notify users of price drops'
 
     def handle(self, *args, **kwargs):
-        # Run the price-checking logic in an event loop
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(self._check_prices())
+        # Create a new event loop explicitly
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            loop.run_until_complete(self._check_prices())
+        finally:
+            loop.close()
 
     async def _check_prices(self):
         # Fetch products asynchronously
