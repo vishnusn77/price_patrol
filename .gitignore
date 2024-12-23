@@ -1,6 +1,6 @@
 .env
 
-/staticfiles/
+/staticfiles/admin/
 price_tracker/__pycache__/
 tracker/__pycache__/
 tracker/cache/
