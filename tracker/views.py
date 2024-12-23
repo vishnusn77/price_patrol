@@ -11,17 +11,7 @@ from asgiref.sync import sync_to_async
 from django.core.mail import send_mail
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required  # For login restrictions
-from tracker.crons import PriceCheckCronJob
 from decouple import config
-
-
-def run_price_check(request):
-    try:
-        # Run the cron job logic
-        PriceCheckCronJob().do()
-        return JsonResponse({"status": "success", "message": "Price check completed."})
-    except Exception as e:
-        return JsonResponse({"status": "error", "message": str(e)})
 
 
 def home_view(request):
