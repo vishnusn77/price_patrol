@@ -134,7 +134,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 # URL to serve static files
-STATIC_URL = '/static/'
+STATIC_URL = '/staticfiles/'
 
 # Path to collect static files for deployment
 STATIC_ROOT = BASE_DIR / "staticfiles"
