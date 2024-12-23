@@ -12,8 +12,16 @@ from django.core.mail import send_mail
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required  # For login restrictions
 from decouple import config
+from django.core.management import call_command
 
+def run_check_prices(request):
+    try:
+        call_command('check_prices')
+        return JsonResponse({"status": "success", "message": "Price check completed."})
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": str(e)})
 
+        
 def home_view(request):
     # Redirect to login if not authenticated
     if not request.user.is_authenticated:

@@ -6,6 +6,7 @@ from .views import (
     home_view,
     add_product,
     product_list,
+    run_check_prices,
 )
 
 urlpatterns = [
@@ -15,4 +16,5 @@ urlpatterns = [
     path('logout/', logout_view, name='logout'),
     path('add_product/', add_product, name='add_product'),
     path('products/', product_list, name='product_list'),
+    path('run_check_prices/', run_check_prices, name='run_check_prices'),
 ]
