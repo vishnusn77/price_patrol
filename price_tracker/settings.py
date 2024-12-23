@@ -80,13 +80,13 @@ WSGI_APPLICATION = 'price_tracker.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': 'REDACTED',  # Replace with your database name
+        'NAME': config('DATABASE_NAME'),
         'CLIENT': {
             #'host': 'mongodb://127.0.0.1:27017/',  # For local MongoDB
             # OR use your MongoDB Atlas URI
-            'host': 'mongodb+srv://REDACTED:REDACTED@cluster0.k1zry.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
-            'username': 'REDACTED',  # MongoDB username (leave blank for local)
-            'password': 'REDACTED',  # MongoDB password (leave blank for local)
+            'host': config('DATABASE_HOST'),
+            'username': config('DATABASE_USER_NAME'),
+            'password': config('DATABASE_PASSWORD'),
         }
     }
 }

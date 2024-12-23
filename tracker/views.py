@@ -12,6 +12,7 @@ from django.core.mail import send_mail
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required  # For login restrictions
 from tracker.crons import PriceCheckCronJob
+from decouple import config
 
 
 def run_price_check(request):
@@ -104,7 +105,7 @@ def send_price_alert(product):
     send_mail(
         subject,
         message,
-        'REDACTED',  # Replace with your Gmail address
+        config('EMAIL_HOST_USER'),  # Replace with your Gmail address
         recipient_list,
         fail_silently=False,  # Set to True in production to avoid email failures causing crashes
     )
