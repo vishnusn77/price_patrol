@@ -4,19 +4,50 @@
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Price Tracker{% endblock %}</title>
+    <title>Price Patrol</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon/icon.png' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        /* Footer styling */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: #343a40; /* Dark grey color */
+            color: white;
+            padding: 5px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+        .footer a {
+            color: white;
+            margin: 0 10px;
+            text-decoration: none;
+        }
+        .footer img {
+            margin-left: 5px;
+            width: 20px;
+            height: 20px;
+        }
+        @media (max-width: 768px) {
+            .footer {
+                font-size: 0.8rem; /* Adjust font size for smaller screens */
+            }
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">Price Tracker</a>
+            <a class="navbar-brand" href="/">Price Patrol</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
+                <ul class="navbar-nav ms-auto"> <!-- Align navigation to the right -->
                     {% if user.is_authenticated %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'product_list' %}">Products</a>
@@ -40,12 +71,21 @@
         </div>
     </nav>
 
-    <div class="container mt-4">
+    <div class="container mt-4 mb-5"> <!-- Added mb-5 for footer spacing -->
         {% block content %}
         {% endblock %}
     </div>
+<!-- Footer -->
+<footer class="footer text-center" style="background-color: #736d6d; color: #ebebeb; font-size: 0.9rem; padding: 0.5rem;">
+    <span>Developed by Vishnu Nair |</span>
+    <a href="https://www.linkedin.com/in/vishnu-nair2766/" target="_blank" style="margin-left: 8px; margin-right: 4px;">
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linkedin/linkedin-original.svg" alt="LinkedIn" width="16" height="16">
+    </a>
+    <a href="https://github.com/vishnusn77" target="_blank" style="margin-left: 4px;">
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" alt="GitHub" width="16" height="16">
+    </a>
+</footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-    

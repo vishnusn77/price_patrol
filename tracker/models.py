@@ -8,7 +8,7 @@ class Product(models.Model):
     current_price = models.FloatField()
     desired_price = models.FloatField()
     price_history = models.JSONField(default=list)
-    user_email = models.EmailField(default="anonymous@example.com")
+    user_email = models.EmailField(default="")
 
     def __str__(self):
         return self.name

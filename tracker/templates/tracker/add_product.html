@@ -4,22 +4,56 @@
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-6">
-        <h2 class="text-center mb-4">Add a Product to Track</h2>
-        {% if messages %}
-            <div class="alert alert-danger">
-                <ul class="mb-0">
-                    {% for message in messages %}
-                        <li>{{ message }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-        {% endif %}
-        <form method="post" class="card p-4 shadow-sm">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary w-100">Add Product</button>
-        </form>
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-lg p-4">
+            <h2 class="text-center mb-4">Add a Product to Track</h2>
+            
+            {% if messages %}
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        {% for message in messages %}
+                            <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            
+            <form method="post">
+                {% csrf_token %}
+                
+                <!-- Product URL -->
+                <div class="mb-3">
+                    <label for="id_url" style="font-weight: bold;">Product URL:</label>
+                    <input type="text" name="url" id="id_url" value="{{ form.url.value|default_if_none:'' }}" 
+                           style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+                
+                <!-- Desired Price -->
+                <div class="mb-3">
+                    <label for="id_desired_price" style="font-weight: bold;">Desired Price:</label>
+                    <div style="display: flex; align-items: center;">
+                        <span style="padding: 8px; border: 1px solid #ccc; border-right: none; background-color: #f8f9fa;">$</span>
+                        <input type="number" name="desired_price" id="id_desired_price" value="{{ form.desired_price.value|default_if_none:'' }}" 
+                               style="flex: 1; padding: 8px; border: 1px solid #ccc; border-left: none; border-radius: 0 4px 4px 0;">
+                    </div>
+                </div>
+                
+                <!-- Email -->
+                <div class="mb-3">
+                    <label for="id_user_email" style="font-weight: bold;">Your Email:</label>
+                    <input type="email" name="user_email" id="id_user_email" value="{{ form.user_email.value|default_if_none:'' }}" 
+                           style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                    <small style="color: gray; display: block; margin-top: 4px;">
+                        You'll receive an alert when the price drops below your desired value.
+                    </small>
+                </div>
+                
+                <!-- Submit Button -->
+                <button type="submit" style="background-color: #007bff; color: white; padding: 10px 0; border: none; border-radius: 5px; width: 100%; font-size: 16px; font-weight: bold; cursor: pointer;">
+                    Add Product
+                </button>
+            </form>
+        </div>
     </div>
 </div>
 {% endblock %}

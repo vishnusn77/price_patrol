@@ -4,13 +4,49 @@
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <h2 class="text-center mb-4">Register</h2>
         <form method="post" class="card p-4 shadow-sm">
             {% csrf_token %}
-            {{ form.as_p }}
+            
+            <!-- Username Field -->
+            <div class="mb-3">
+                <label for="id_username" class="form-label">Username</label>
+                <input type="text" name="username" class="form-control" id="id_username">
+            </div>
+            
+            <!-- Password Field -->
+            <div class="mb-3">
+                <label for="id_password1" class="form-label">Password</label>
+                <input type="password" name="password1" class="form-control" id="id_password1">
+                <small class="text-muted">
+                    Password requirements:
+                    <ul>
+                        <li>At least 8 characters long.</li>
+                        <li>Cannot be entirely numeric.</li>
+                        <li>Cannot be too similar to your username or email.</li>
+                        <li>Should not be a commonly used password.</li>
+                    </ul>
+                </small>
+            </div>
+            
+            <!-- Confirm Password Field -->
+            <div class="mb-3">
+                <label for="id_password2" class="form-label">Confirm Password</label>
+                <input type="password" name="password2" class="form-control" id="id_password2">
+            </div>
+
+            <!-- Email Field -->
+            <div class="mb-3">
+                <label for="id_email" class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" id="id_email">
+            </div>
+
             <button type="submit" class="btn btn-success w-100">Register</button>
         </form>
+        <div class="text-center mt-3">
+            <p>Already have an account? <a href="{% url 'login' %}">Login here</a>.</p>
+        </div>
     </div>
 </div>
 {% endblock %}
