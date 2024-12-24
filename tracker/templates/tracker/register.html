@@ -8,17 +8,36 @@
         <h2 class="text-center mb-4">Register</h2>
         <form method="post" class="card p-4 shadow-sm">
             {% csrf_token %}
-            
+
+            <!-- Display general form errors -->
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
             <!-- Username Field -->
             <div class="mb-3">
                 <label for="id_username" class="form-label">Username</label>
-                <input type="text" name="username" class="form-control" id="id_username">
+                <input type="text" name="username" class="form-control {% if form.username.errors %}is-invalid{% endif %}" id="id_username">
+                {% if form.username.errors %}
+                    <div class="invalid-feedback">
+                        {{ form.username.errors|join:", " }}
+                    </div>
+                {% endif %}
             </div>
-            
+
             <!-- Password Field -->
             <div class="mb-3">
                 <label for="id_password1" class="form-label">Password</label>
-                <input type="password" name="password1" class="form-control" id="id_password1">
+                <input type="password" name="password1" class="form-control {% if form.password1.errors %}is-invalid{% endif %}" id="id_password1">
+                {% if form.password1.errors %}
+                    <div class="invalid-feedback">
+                        {{ form.password1.errors|join:", " }}
+                    </div>
+                {% endif %}
                 <small class="text-muted">
                     Password requirements:
                     <ul>
@@ -29,17 +48,27 @@
                     </ul>
                 </small>
             </div>
-            
+
             <!-- Confirm Password Field -->
             <div class="mb-3">
                 <label for="id_password2" class="form-label">Confirm Password</label>
-                <input type="password" name="password2" class="form-control" id="id_password2">
+                <input type="password" name="password2" class="form-control {% if form.password2.errors %}is-invalid{% endif %}" id="id_password2">
+                {% if form.password2.errors %}
+                    <div class="invalid-feedback">
+                        {{ form.password2.errors|join:", " }}
+                    </div>
+                {% endif %}
             </div>
 
             <!-- Email Field -->
             <div class="mb-3">
                 <label for="id_email" class="form-label">Email</label>
-                <input type="email" name="email" class="form-control" id="id_email">
+                <input type="email" name="email" class="form-control {% if form.email.errors %}is-invalid{% endif %}" id="id_email">
+                {% if form.email.errors %}
+                    <div class="invalid-feedback">
+                        {{ form.email.errors|join:", " }}
+                    </div>
+                {% endif %}
             </div>
 
             <button type="submit" class="btn btn-success w-100">Register</button>

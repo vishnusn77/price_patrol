@@ -35,9 +35,14 @@ def register_view(request):
         if form.is_valid():
             form.save()
             return redirect('login')
+        else:
+            # Errors will be passed back to the form and displayed
+            return render(request, 'tracker/register.html', {'form': form})
     else:
         form = RegisterForm()
     return render(request, 'tracker/register.html', {'form': form})
+
+
 
 
 def login_view(request):
@@ -46,9 +51,13 @@ def login_view(request):
         if form.is_valid():
             login(request, form.get_user())
             return redirect('product_list')
+        else:
+            # Add error message for incorrect login details
+            messages.error(request, "Incorrect username or password.")
     else:
         form = AuthenticationForm()
     return render(request, 'tracker/login.html', {'form': form})
+
 
 
 def logout_view(request):

@@ -8,6 +8,12 @@ class RegisterForm(UserCreationForm):
         model = User
         fields = ['username', 'email', 'password1', 'password2']
 
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError("This username is already taken. Please choose a different one.")
+        return username
+
 
 class ProductForm(forms.ModelForm):
     class Meta:
