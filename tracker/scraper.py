@@ -21,6 +21,7 @@ def get_cache_path(url, cache_dir="tracker/cache"):
 
     # Return the full cache path
     return os.path.join(cache_dir, sanitized_filename)
+    print(f"Cache Path: {os.path.join(cache_dir, sanitized_filename)}")
 
 
 async def save_to_cache(html, file_path):

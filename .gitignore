@@ -7,3 +7,4 @@ tracker/cache/
 tracker/management/__pycache__/
 tracker/management/commands/__pycache__/
 tracker/migrations/__pycache__/
+logs/debug.log
