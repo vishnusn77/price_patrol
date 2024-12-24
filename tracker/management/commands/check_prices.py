@@ -4,6 +4,10 @@ from django.core.management.base import BaseCommand
 from tracker.models import Product
 from tracker.tasks import send_price_drop_email
 from tracker.scraper import fetch_price  # Your asynchronous price-fetching logic
+import logging
+
+# Set up a logger for cron jobs
+logger = logging.getLogger('cron_logger')  # Use the dedicated cron logger
 
 class Command(BaseCommand):
     help = 'Check product prices and notify users of price drops'
@@ -27,7 +31,7 @@ class Command(BaseCommand):
                 product_name, current_price = await fetch_price(product.url)  # Fetch name and price using async function
 
                 if current_price is None:
-                    self.stdout.write(f"Could not fetch price for {product.name}. Skipping...")
+                    logger.warning(f"Could not fetch price for {product.name}. Skipping...")
                     continue
 
                 # Convert last_notified_price to float if it exists
@@ -38,7 +42,7 @@ class Command(BaseCommand):
 
                 # Check if the email has already been sent for this price
                 if last_notified_price is not None and last_notified_price == current_price:
-                    self.stdout.write(f"Email already sent for {product.name} at price {current_price}. Skipping...")
+                    logger.info(f"Email already sent for {product.name} at price {current_price}. Skipping...")
                     continue
 
                 # Send email if the price is below or equal to the desired price
@@ -46,9 +50,9 @@ class Command(BaseCommand):
                     send_price_drop_email(product, current_price)
                     product.last_notified_price = current_price  # Update the notified price
                     await sync_to_async(product.save)()  # Save the updated product
-                    self.stdout.write(f"Email sent for {product.name} to {product.user_email}")
+                    logger.info(f"Email sent for {product.name} to {product.user_email}")
                 else:
-                    self.stdout.write(f"No price drop for {product.name}")
+                    logger.info(f"No price drop for {product.name}")
 
             except Exception as e:
-                self.stdout.write(f"Error checking price for {product.name}: {e}")
+                logger.error(f"Error checking price for {product.name}: {e}", exc_info=True)
