@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 class Product(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
-    url = models.URLField(max_length=500)
+    url = models.URLField(max_length=1000)
     current_price = models.FloatField()
     desired_price = models.FloatField()
     price_history = models.JSONField(default=list)

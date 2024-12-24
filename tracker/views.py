@@ -13,6 +13,10 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required  # For login restrictions
 from decouple import config
 from django.core.management import call_command
+import logging
+
+# Set up a logger for cron jobs
+logger = logging.getLogger('cron_logger')  # Use the dedicated cron logger
 
 def run_check_prices(request):
     try:
@@ -72,19 +76,32 @@ def add_product(request):
         if form.is_valid():
             product = form.save(commit=False)  # Don't save to DB yet
             product.user = request.user  # Associate product with the logged-in user
-            product_name, current_price = asyncio.run(fetch_price(product.url))  # Fetch name and price
-            
-            if current_price is None:
-                form.add_error('url', 'Could not fetch price for the given URL.')
-            else:
-                product.name = product_name  # Save the scraped product name
-                product.current_price = current_price
-                product.save()  # Save to the database
-                return redirect('product_list')  # Redirect to the product list page
+
+            try:
+                logger.info(f"Fetching price for URL: {product.url}")
+                product_name, current_price = asyncio.run(fetch_price(product.url))  # Fetch name and price
+
+                if current_price is None:
+                    form.add_error('url', 'Could not fetch price for the given URL.')
+                    logger.warning(f"Failed to fetch price for URL: {product.url}")
+                else:
+                    product.name = product_name  # Save the scraped product name
+                    product.current_price = current_price
+                    product.save()  # Save to the database
+                    logger.info(f"Product '{product.name}' added successfully.")
+                    return redirect('product_list')  # Redirect to the product list page
+
+            except Exception as e:
+                logger.error(f"Error while adding product: {e}")
+                form.add_error(None, "An unexpected error occurred while adding the product.")
+        else:
+            logger.warning(f"Form validation failed: {form.errors}")
+
     else:
         form = ProductForm()
 
     return render(request, 'tracker/add_product.html', {'form': form})
+
 
 
 
