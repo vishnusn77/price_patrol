@@ -14,6 +14,7 @@ from django.contrib.auth.decorators import login_required  # For login restricti
 from decouple import config
 from django.core.management import call_command
 import logging
+from .canopy_api import fetch_amazon_product_data
 
 # Set up a logger for cron jobs
 logger = logging.getLogger('cron_logger')  # Use the dedicated cron logger
@@ -69,6 +70,7 @@ def logout_view(request):
     return redirect('login')
 
 
+
 @login_required
 def add_product(request):
     if request.method == "POST":
@@ -76,27 +78,20 @@ def add_product(request):
         if form.is_valid():
             product = form.save(commit=False)  # Don't save to DB yet
             product.user = request.user  # Associate product with the logged-in user
-
+            
             try:
-                logger.info(f"Fetching price for URL: {product.url}")
-                product_name, current_price = asyncio.run(fetch_price(product.url))  # Fetch name and price
-
-                if current_price is None:
-                    form.add_error('url', 'Could not fetch price for the given URL.')
-                    logger.warning(f"Failed to fetch price for URL: {product.url}")
+                # Call fetch_amazon_product_data asynchronously
+                product_data = asyncio.run(fetch_amazon_product_data(product.url))
+                if not product_data or 'price' not in product_data or not product_data['price']:
+                    form.add_error('url', 'Could not fetch price data for the given URL.')
                 else:
-                    product.name = product_name  # Save the scraped product name
-                    product.current_price = current_price
-                    product.save()  # Save to the database
-                    logger.info(f"Product '{product.name}' added successfully.")
+                    # Extract and update product details
+                    product.name = product_data['title']
+                    product.current_price = float(product_data['price']['display'].replace('$', '').replace(',', ''))
+                    product.save()
                     return redirect('product_list')  # Redirect to the product list page
-
             except Exception as e:
-                logger.error(f"Error while adding product: {e}")
-                form.add_error(None, "An unexpected error occurred while adding the product.")
-        else:
-            logger.warning(f"Form validation failed: {form.errors}")
-
+                form.add_error('url', f"Error fetching product data: {str(e)}")
     else:
         form = ProductForm()
 
