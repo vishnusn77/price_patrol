@@ -37,7 +37,6 @@ async def fetch_amazon_product_data(url):
     if not await APIUsage.increment():
         raise RuntimeError("API usage limit reached. Skipping request.")
 
-    # Make the API call
     try:
         response = requests.post(
             CANOPY_API_URL,
