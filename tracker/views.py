@@ -19,6 +19,9 @@ from .canopy_api import fetch_amazon_product_data
 # Set up a logger for cron jobs
 logger = logging.getLogger('cron_logger')  # Use the dedicated cron logger
 
+def keep_alive_view(request):
+    return JsonResponse({"status": "ok", "message": "App is alive!"})
+
 def run_check_prices(request):
     try:
         call_command('check_prices')

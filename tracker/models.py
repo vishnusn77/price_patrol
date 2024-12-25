@@ -22,25 +22,34 @@ class Product(models.Model):
 
 
 class APIUsage(models.Model):
-    date = models.DateField(auto_now_add=True, unique=True)
-    total_requests = models.IntegerField(default=0)
+    date = models.DateField(auto_now_add=True, unique=True)  # Tracks when the record was created
+    total_requests = models.IntegerField(default=0)          # Tracks total requests made this month
 
     @classmethod
     async def increment(cls):
         """
-        Increment the request count for the current day in an async-compatible way.
+        Increment the request count for the current month in an async-compatible way.
         Returns True if the increment is successful (within limit), False otherwise.
         """
-        today = date.today()
         try:
-            usage = await sync_to_async(cls.objects.get_or_create)(date=today)
-            usage_instance = usage[0]  # Get the actual usage instance
-            if usage_instance.total_requests < 100:  # Assuming limit is 100 requests/day
-                usage_instance.total_requests += 1
-                await sync_to_async(usage_instance.save)()
+            # Get the current month and year
+            today = now().date()
+            start_of_month = today.replace(day=1)
+
+            # Fetch or create the usage record for the current month
+            usage, created = await sync_to_async(cls.objects.get_or_create)(
+                date=start_of_month
+            )
+
+            # Check if the limit has been reached
+            if usage.total_requests < 100:  # Assuming 100 requests/month
+                usage.total_requests += 1
+                await sync_to_async(usage.save)()
                 return True  # Request is allowed
-            logger.warning("API usage limit reached.")
+
+            logger.warning("API usage limit for the month has been reached.")
             return False  # Limit reached
+
         except Exception as e:
             logger.error(f"Failed to check or update API usage: {e}")
             return False
@@ -48,10 +57,13 @@ class APIUsage(models.Model):
     @classmethod
     async def reset_if_needed(cls):
         """
-        Remove old API usage records beyond 30 days in an async-compatible way.
+        Automatically clean up old records if needed (e.g., records from previous months).
         """
         try:
-            threshold_date = date.today() - timedelta(days=30)
+            # Define the threshold for cleanup (records older than 30 days)
+            threshold_date = now().date() - timedelta(days=30)
+
+            # Delete all usage records older than 30 days
             await sync_to_async(cls.objects.filter(date__lt=threshold_date).delete)()
         except Exception as e:
             logger.error(f"Error resetting API usage records: {e}")

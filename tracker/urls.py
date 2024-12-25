@@ -7,6 +7,7 @@ from .views import (
     add_product,
     product_list,
     run_check_prices,
+    keep_alive_view,
 )
 
 urlpatterns = [
@@ -17,4 +18,5 @@ urlpatterns = [
     path('add_product/', add_product, name='add_product'),
     path('products/', product_list, name='product_list'),
     path('run_check_prices/', run_check_prices, name='run_check_prices'),
+    path('keep-alive/', keep_alive_view, name='keep_alive'),
 ]
