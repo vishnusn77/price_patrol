@@ -30,17 +30,11 @@ class APIUsage(models.Model):
         """
         try:
             # Ensure there is only one global record
-            usage, created = await sync_to_async(cls.objects.get_or_create)(id=1)
-            
-            # Check if the limit has been reached
-            if usage.total_requests < 60:  # Limit of 60 requests globally
-                usage.total_requests += 1
-                await sync_to_async(usage.save)()
-                logger.info(f"API usage incremented: {usage.total_requests}")
-                return True  # Allow the request
-            else:
-                logger.warning("API usage limit reached.")
-                return False  # Block the request
+            usage, _ = await sync_to_async(cls.objects.get_or_create)(id=1)
+            usage.total_requests += 1
+            await sync_to_async(usage.save)()
+            logger.info(f"API usage incremented: {usage.total_requests}")
+            return True  # Allow the request  
         except Exception as e:
             logger.error(f"Failed to check or update API usage: {e}")
-            return False
+            return True  
